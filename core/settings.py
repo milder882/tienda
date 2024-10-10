@@ -16,7 +16,6 @@ DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -35,9 +34,13 @@ INSTALLED_APPS = [
 
     'tailwind',
     'theme',
+
+    'accounts'
 ]
 
 TAILWIND_APP_NAME = 'theme'
+
+EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -47,6 +50,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
+LOGIN_REDIRECT_URL = "/"
 
 SITE_ID = 1
 
