@@ -16,6 +16,7 @@ class UserLibrary(models.Model):
     def __str__(self):
         return self.user.email
 
+
 def post_save_user_receiver(sender, instance, created, **kwargs):
     if created:
         library=UserLibrary.objects.create(user=instance)

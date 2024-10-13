@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
+from django.views.generic.edit import UpdateView
 from django.core.paginator import Paginator
 from marketplace.models import Product
 from marketplace.forms import ProductModelForm
+from django.urls import reverse
 
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
 class HomeView(View):
     def get(self, request, *args, **kwargs):
@@ -47,6 +50,8 @@ class HomeView(View):
                 return redirect('home')
 
 
+
+
         digital_products_data = None
 
         if products:
@@ -58,7 +63,7 @@ class HomeView(View):
             'products':digital_products_data
         }
         return render(request, 'pages/index.html', context)
-    
+
 
 class UserProductListView(View):
     def get(self, request, *args, **kwargs):
@@ -67,3 +72,23 @@ class UserProductListView(View):
             'products':products
         }
         return render(request, 'pages/products/user_productlist.html', context)
+
+
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    template_name="pages/products/edit.html"
+    form_class=ProductModelForm
+
+    def get_queryset(self):
+        return Product.objects.filter(user=self.request.user)
+
+    def get_success_url(self):
+        return reverse("product-list")
+    
+
+class ProductDetailView(View):
+    def get(self, request, slug,*args, **kwargs):
+        product = get_object_or_404(Product, slug=slug)
+        context={
+            'product':product
+        }
+        return render(request, 'pages/products/detail.html', context)
