@@ -5,7 +5,6 @@ import environ
 from shutil import which
 NPM_BIN_PATH = which("npm")
 
-
 env = environ.Env()
 environ.Env.read_env()
 
@@ -15,7 +14,7 @@ SECRET_KEY =  os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG')
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -48,7 +47,7 @@ INTERNAL_IPS = [
 
 EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
 
-# NPM_BIN_PATH = "/usr/bin/npm"
+
 #NPM_BIN_PATH = r"C:\Program Files (x86)\nodejs\npm.cmd"
 
 AUTHENTICATION_BACKENDS = [
@@ -152,3 +151,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')

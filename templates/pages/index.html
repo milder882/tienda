@@ -220,7 +220,7 @@
       {% for product in products %}
       <div class="flex flex-col rounded-lg shadow-lg overflow-hidden">
         <div class="flex-shrink-0">
-          <a href="{% url 'product-detail' product.slug %}" class="block mt-2">
+          <a href="{% url 'product-detail' product.slug %}">
           <img class="h-48 w-full object-cover" src="{{product.thumbnail.url}}" alt="">
           </a>
         </div>

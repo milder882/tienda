@@ -5,13 +5,24 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.urls.conf import include
 
-from .views import HomeView, UserProductListView, ProductUpdateView, ProductDetailView
-
+from .views import (
+    HomeView, 
+UserProductListView, 
+ProductUpdateView, 
+ProductDetailView, 
+CreateCheckoutSessionView,
+SuccessView,
+)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
 
     path('users/', include('accounts.urls', namespace='users')),
+
+
+    path('create-checkout-session/<slug>/', CreateCheckoutSessionView.as_view(), name="create-checkout-session"),
+    path("success/", SuccessView.as_view(), name="success"),
+
 
     path('', HomeView.as_view(), name="home"),
     path('products/', UserProductListView.as_view(), name="product-list"),

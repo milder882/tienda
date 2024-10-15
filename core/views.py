@@ -1,10 +1,19 @@
+from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView
 from django.core.paginator import Paginator
 from marketplace.models import Product
 from marketplace.forms import ProductModelForm
+from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
+from django.conf import settings
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from stripe.error import SignatureVerificationError
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
@@ -89,6 +98,43 @@ class ProductDetailView(View):
     def get(self, request, slug,*args, **kwargs):
         product = get_object_or_404(Product, slug=slug)
         context={
-            'product':product
+            'product':product,
+            
         }
+        context.update({
+            'STRIPE_PUBLIC_KEY':settings.STRIPE_PUBLIC_KEY
+        })
         return render(request, 'pages/products/detail.html', context)
+
+
+class CreateCheckoutSessionView(View):
+    def post(self, request,*args, **kwargs):
+        product=Product.objects.get(slug=self.kwargs["slug"])
+
+        domain = "https://vudera.com"
+        if settings.DEBUG:
+            domain="http://127.0.0.1:8000"
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                    'name': product.name,
+                     },
+                'unit_amount': product.price,
+            },
+            'quantity': 1,
+            }],
+            mode='payment',
+            success_url=domain + reverse("success"),
+            cancel_url=domain + reverse("home"),
+        )
+
+        return JsonResponse({
+            "id":session.id
+        })
+
+
+class SuccessView(TemplateView):
+    template_name='pages/products/success.html'
